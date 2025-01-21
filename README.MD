@@ -2,7 +2,7 @@
 
 This repository contains the code for the paper --> link to add
 
-PHICO basic model architecture
+### PHICO basic model architecture
 
 
 	class  AdaptedAI(nn.Module):
@@ -38,7 +38,7 @@ PHICO basic model architecture
 			return img_features, n_l, out
 
 
-Loss function
+### Loss function
 
     class  CorrectionLoss(nn.Module):
     	def  __init__(self, loss1, C=0, N_human=None, N_base=None):
@@ -66,3 +66,25 @@ Loss function
 			l = self.loss1(prediction, target)
 			correction = self.noiseCorrection(prediction, n_input)
 			return l+correction
+
+
+
+### Basic training loop
+
+    criterion = CorrectionLoss(nn.CrossEntropyLoss(), 0.1, )
+    
+    EPOCHS = 100
+        for _ in  range(EPOCHS):
+	        for i, (imgs, labels, n_labels) in  enumerate(trainloader):
+		        imgs = imgs.to(device)
+		        labels = labels.to(device)
+		        n_labels = n_labels.to(device)
+		        n_labels = F.one_hot(n_labels, num_classes=10).to(device, dtype=torch.float32)
+		        optimizer.zero_grad()
+		        _, _, outputs = adapt_model(imgs, n_labels)
+		        loss = criterion(outputs, torch.argmax(n_labels, dim=1), labels)
+		        loss.backward()
+		        optimizer.step()
+		        running_loss = loss.item()
+		        _, preds = torch.max(outputs, 1)
+		        global_step += 1
