@@ -2,9 +2,9 @@
 
 This repository contains the code for the paper --> link to add
 
-* Below are basic code snippets to provide the idea of model, training loop, loss function and data loader.
-* A complete code taking CIFAR10N experiment as example is in the 'Codes' folder that goes though python notebook 1 to 5.
-* code/matrics.py has the implementations of the evaluation criteria.
+* Below are basic code snippets that provide an idea of the model, loss function, data loader, and training loop.
+* A complete code example, using the CIFAR10N experiment, is available in the 'Codes' folder. It goes through Python notebooks 1 to 5.
+* `code/matrics.py` contains the implementations of the evaluation criteria.
 
 ### Basic model architecture
 
@@ -57,7 +57,7 @@ This repository contains the code for the paper --> link to add
 		    img = Image.fromarray(img)
 		    
 		    #should return (image, consensus, noisy label)
-		    return img, target, n_l
+		    return img, consensus, n_l
 			
 ### Loss function
 
@@ -94,18 +94,21 @@ This repository contains the code for the paper --> link to add
     
     EPOCHS = 100
         for _ in  range(EPOCHS):
-	        for i, (imgs, labels, n_labels) in  enumerate(trainloader):
+	        for i, (imgs, consensus, n_labels) in  enumerate(trainloader):
 		        imgs = imgs.to(device)
-		        labels = labels.to(device)
+		        consensus = consensus.to(device)
 		        n_labels = n_labels.to(device)
+				
+				# making the noisy label a one-hot vector
 		        n_labels = F.one_hot(n_labels, num_classes=10).to(device, dtype=torch.float32)
 
+				# forward pass
 		        optimizer.zero_grad()
 		        _, _, outputs = adapt_model(imgs, n_labels)
 
-		        loss = criterion(outputs, torch.argmax(n_labels, dim=1), labels)
+				# loss calculation
+		        loss = criterion(outputs, torch.argmax(n_labels, dim=1), consensus)
 		        loss.backward()
 		        optimizer.step()
 
 		        _, preds = torch.max(outputs, 1)
-		        global_step += 1
