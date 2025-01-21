@@ -2,12 +2,11 @@
 
 This repository contains the code for the paper --> link to add
 
-Below are basic code snippets to provide the idea of model, training loop, loss function and data loader
-A complete code taking CIFAR10N experiment as example is in the 'Codes' folder that goes though python notebook 1 to 5.
-code/matrics.py has implementations of the evaluation criteria
+* Below are basic code snippets to provide the idea of model, training loop, loss function and data loader.
+* A complete code taking CIFAR10N experiment as example is in the 'Codes' folder that goes though python notebook 1 to 5.
+* code/matrics.py has the implementations of the evaluation criteria.
 
 ### Basic model architecture
-
 
 	class  AdaptedAI(nn.Module):
 		def  __init__(self):
@@ -41,7 +40,25 @@ code/matrics.py has implementations of the evaluation criteria
 			out = self.decision_ai(out)
 			return img_features, n_l, out
 
+### Basic data loader
 
+    class  CIFAR10(VisionDataset):
+	    def  __init__(self):
+		    # data loading and etc
+	    
+	    def  __len__(self) -> int:
+		    return  len(self.noisyLabels)
+	    
+	    def  __getitem__(self, index: int) -> Tuple[Any, Any]:
+		    # data loading covers all the noisy labels from the cluster.
+		    
+		    # image and consensus label loading is adjusted accordingly.
+		    img, consensus, n_l = self.data[index % len(self.data)], self.consensus[index % len(self.data)], self.noisyLabels[index]
+		    img = Image.fromarray(img)
+		    
+		    #should return (image, consensus, noisy label)
+		    return img, target, n_l
+			
 ### Loss function
 
     class  CorrectionLoss(nn.Module):
@@ -70,8 +87,6 @@ code/matrics.py has implementations of the evaluation criteria
 			l = self.loss1(prediction, target)
 			correction = self.noiseCorrection(prediction, n_input)
 			return l+correction
-
-
 
 ### Basic training loop
 
