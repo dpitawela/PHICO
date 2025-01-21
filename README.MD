@@ -5,37 +5,37 @@ This repository contains the code for the paper --> link to add
 PHICO basic model architecture
 
 
-    class  AdaptedAI(nn.Module):
-	    def  __init__(self):
-		    super(AdaptedAI, self).__init__()
-			
-			# base model
-			# can be any model architecture of choice that supports classification
-			# the output should be the classification head logits
-		    self.base_model = 
-
-		    # human label encoder
-		    self.n_l_encoder = nn.Sequential(
-		    nn.Linear(10, 32),
-		    nn.ReLU(),
-		    nn.Linear(32, 10)
-		    )  
-    
-		    # decision model
-		    self.decision_ai = nn.Sequential(
-		    nn.Linear(20, 64),
-		    nn.ReLU(),
-		    nn.Linear(64, 32),
-		    nn.ReLU(),
-		    nn.Linear(32, 10),
-		    )
-    
-	    def  forward(self, imgs, n_l):
-		    img_features = self.base_model(imgs)
-		    n_l_features = self.n_l_encoder(n_l)
-		    out = torch.cat((img_features, n_l_features), dim=1)
-		    out = self.decision_ai(out)
-			return img_features, n_l, out
+class  AdaptedAI(nn.Module):
+	def  __init__(self):
+		super(AdaptedAI, self).__init__()
+		
+		# base model
+		# can be any model architecture of choice that supports classification
+		# the output should be the classification head logits
+		self.base_model = 
+		
+		# human label encoder
+		self.n_l_encoder = nn.Sequential(
+		nn.Linear(10, 32),
+		nn.ReLU(),
+		nn.Linear(32, 10)
+		)  
+		
+		# decision model
+		self.decision_ai = nn.Sequential(
+		nn.Linear(20, 64),
+		nn.ReLU(),
+		nn.Linear(64, 32),
+		nn.ReLU(),
+		nn.Linear(32, 10),
+		)
+	
+	def  forward(self, imgs, n_l):
+		img_features = self.base_model(imgs)
+		n_l_features = self.n_l_encoder(n_l)
+		out = torch.cat((img_features, n_l_features), dim=1)
+		out = self.decision_ai(out)
+		return img_features, n_l, out
 
 
 Loss function
