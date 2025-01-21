@@ -55,8 +55,9 @@ This repository contains the code for the paper --> link to add
 		    # image and consensus label loading is adjusted accordingly.
 		    img, consensus, n_l = self.data[index % len(self.data)], self.consensus[index % len(self.data)], self.noisyLabels[index]
 		    img = Image.fromarray(img)
-		    
-		    #should return (image, consensus, noisy label)
+		    ### image transforms
+	
+		    # finally should return (image, consensus, noisy label)
 		    return img, consensus, n_l
 			
 ### Loss function
@@ -93,22 +94,22 @@ This repository contains the code for the paper --> link to add
     criterion = CorrectionLoss(nn.CrossEntropyLoss(), 0.1, noise_H)
     
     EPOCHS = 100
-        for _ in  range(EPOCHS):
-	        for i, (imgs, consensus, n_labels) in  enumerate(trainloader):
-		        imgs = imgs.to(device)
-		        consensus = consensus.to(device)
-		        n_labels = n_labels.to(device)
+	for _ in  range(EPOCHS):
+		for i, (imgs, consensus, n_labels) in  enumerate(trainloader):
+			imgs = imgs.to(device)
+			consensus = consensus.to(device)
+			n_labels = n_labels.to(device)
 				
-				# making the noisy label a one-hot vector
-		        n_labels = F.one_hot(n_labels, num_classes=10).to(device, dtype=torch.float32)
-
-				# forward pass
-		        optimizer.zero_grad()
-		        _, _, outputs = adapt_model(imgs, n_labels)
-
-				# loss calculation
-		        loss = criterion(outputs, torch.argmax(n_labels, dim=1), consensus)
-		        loss.backward()
-		        optimizer.step()
-
-		        _, preds = torch.max(outputs, 1)
+			# making the noisy label a one-hot vector
+			n_labels = F.one_hot(n_labels, num_classes=10).to(device, dtype=torch.float32)
+	
+			# forward pass
+			optimizer.zero_grad()
+			_, _, outputs = adapt_model(imgs, n_labels)
+	
+			# loss calculation
+			loss = criterion(outputs, torch.argmax(n_labels, dim=1), consensus)
+			loss.backward()
+			optimizer.step()
+	
+			_, preds = torch.max(outputs, 1)
