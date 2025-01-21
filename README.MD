@@ -2,7 +2,11 @@
 
 This repository contains the code for the paper --> link to add
 
-### PHICO basic model architecture
+Below are basic code snippets to provide the idea of model, training loop, loss function and data loader
+A complete code taking CIFAR10N experiment as example is in the 'Codes' folder that goes though python notebook 1 to 5.
+code/matrics.py has implementations of the evaluation criteria
+
+### Basic model architecture
 
 
 	class  AdaptedAI(nn.Module):
@@ -71,7 +75,7 @@ This repository contains the code for the paper --> link to add
 
 ### Basic training loop
 
-    criterion = CorrectionLoss(nn.CrossEntropyLoss(), 0.1, )
+    criterion = CorrectionLoss(nn.CrossEntropyLoss(), 0.1, noise_H)
     
     EPOCHS = 100
         for _ in  range(EPOCHS):
@@ -80,11 +84,13 @@ This repository contains the code for the paper --> link to add
 		        labels = labels.to(device)
 		        n_labels = n_labels.to(device)
 		        n_labels = F.one_hot(n_labels, num_classes=10).to(device, dtype=torch.float32)
+
 		        optimizer.zero_grad()
 		        _, _, outputs = adapt_model(imgs, n_labels)
+
 		        loss = criterion(outputs, torch.argmax(n_labels, dim=1), labels)
 		        loss.backward()
 		        optimizer.step()
-		        running_loss = loss.item()
+
 		        _, preds = torch.max(outputs, 1)
 		        global_step += 1
